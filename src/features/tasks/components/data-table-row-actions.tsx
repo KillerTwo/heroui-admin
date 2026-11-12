@@ -34,6 +34,7 @@ export function DataTableRowActions<TData>({
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
+          data-testid='visual-row-actions'
           variant='ghost'
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
         >
