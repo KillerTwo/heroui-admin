@@ -18,7 +18,7 @@
     "test:coverage": "vitest run --coverage --browser.headless",
     "test:browser:install": "playwright install chromium --with-deps",
     "test:visual": "playwright test",
-    "test:visual:update": "playwright test --update-snapshots"
+    "test:visual:update": "playwright test --update-snapshots=all"
   },
   "dependencies": {
     "@clerk/react": "^6.4.3",

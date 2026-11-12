@@ -33,6 +33,11 @@ dist-ssr
 **/__screenshots__/
 .vitest-attachments/
 
+# Playwright artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+
 # Local worktrees and SDD scratch
 .worktrees/
 .superpowers/

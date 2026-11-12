@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { playwright } from '@vitest/browser-playwright'
+import { configDefaults } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
   test: {
     silent: 'passed-only',
     unstubEnvs: true,
+    exclude: [...configDefaults.exclude, 'tests/visual/**'],
     browser: {
       enabled: true,
       provider: playwright(),
