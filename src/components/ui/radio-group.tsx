@@ -30,7 +30,7 @@ function RadioGroup({
       // required one. Callers should pass `aria-label(ledby)`; fall back to a
       // generic name so existing call sites stay silent.
       aria-label={props['aria-labelledby'] ? undefined : 'Radio group'}
-      // Hero adds `mt-4` to each radio of a vertical group; shadcn spaces them
+      // Hero adds `mt-4` to each radio of a vertical group; legacy spaces them
       // with the grid `gap`.
       className={cn('grid gap-3 [&_[data-slot=radio]]:mt-0', className)}
       {...props}
@@ -65,7 +65,7 @@ function RadioGroupItem({
         <HeroRadio.Control
           className={cn(
             // `data-[selected]` fills are Hero defaults (brand `--accent`);
-            // pin the shadcn outline look in every state.
+            // pin the legacy outline look in every state.
             'aspect-square size-4 shrink-0 rounded-full border border-input bg-transparent text-primary shadow-xs transition-[color,box-shadow] outline-none dark:bg-input/30',
             'group-has-[input:focus-visible]/radio:border-ring group-has-[input:focus-visible]/radio:ring-[3px] group-has-[input:focus-visible]/radio:ring-ring/50',
             'group-data-[invalid=true]/radio:border-destructive group-data-[invalid=true]/radio:ring-destructive/20 dark:group-data-[invalid=true]/radio:ring-destructive/40',

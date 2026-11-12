@@ -11,7 +11,7 @@ describe('Button visual contract', () => {
     expect(box.height).toBe(36)
   })
 
-  test('sm / lg / icon sizes keep shadcn heights', async () => {
+  test('sm / lg / icon sizes keep legacy heights', async () => {
     const screen = await render(
       <div>
         <Button size='sm'>Small</Button>

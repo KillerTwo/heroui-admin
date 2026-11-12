@@ -13,7 +13,7 @@ import { PressTrigger } from '@/components/ui/overlay-trigger'
 
 /*
  * Hero's dropdown / menu-item CSS lives in a lower layer than utilities, so the
- * shadcn classes below win. Two details worth knowing:
+ * legacy classes below win. Two details worth knowing:
  *  - a plain `bg-transparent` (no variant) neutralises Hero's media-query hover
  *    background; React Aria moves focus on hover, so `data-[focused=true]`
  *    drives the highlight (what Radix did with `focus:`).

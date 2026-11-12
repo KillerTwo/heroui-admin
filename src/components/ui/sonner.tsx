@@ -83,7 +83,7 @@ type ToasterProps = {
 }
 
 // Hero's `.toast*` rules use `--muted` as text colour, which in this app is the
-// shadcn muted *surface*; pin the old popover look with explicit utilities.
+// legacy muted *surface*; pin the old popover look with explicit utilities.
 const toastClasses = cn(
   '[&_.toast]:rounded-lg [&_.toast]:border [&_.toast]:border-border [&_.toast]:bg-popover [&_.toast]:text-popover-foreground',
   '[&_[data-slot=toast-description]]:block [&_[data-slot=toast-description]]:w-full [&_[data-slot=toast-description]]:text-muted-foreground'

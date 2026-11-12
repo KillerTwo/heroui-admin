@@ -1,5 +1,4 @@
-import { type SVGProps } from 'react'
-import { Root as Radio, Item } from '@radix-ui/react-radio-group'
+import { createContext, use, type SVGProps } from 'react'
 import { CircleCheck, RotateCcw, Settings } from 'lucide-react'
 import { IconDir } from '@/assets/custom/icon-dir'
 import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
@@ -117,6 +116,75 @@ function SectionTitle({
   )
 }
 
+type RadioContextValue = {
+  value: string
+  onValueChange?(value: string): void
+}
+
+const RadioContext = createContext<RadioContextValue | null>(null)
+
+/**
+ * Minimal radiogroup for the preview cards below: roving tabindex, arrow-key
+ * selection (mirrored in RTL). Items are plain `<button role="radio">`s that
+ * expose `data-state` so the cards can style themselves.
+ */
+function Radio({
+  value,
+  onValueChange,
+  onKeyDown,
+  ...props
+}: Omit<React.ComponentProps<'div'>, 'value' | 'dir'> & RadioContextValue) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(e)
+    if (e.defaultPrevented) return
+    const rtl = getComputedStyle(e.currentTarget).direction === 'rtl'
+    const step =
+      e.key === 'ArrowDown' || e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')
+        ? 1
+        : e.key === 'ArrowUp' || e.key === (rtl ? 'ArrowRight' : 'ArrowLeft')
+          ? -1
+          : 0
+    if (!step) return
+    const items = Array.from(
+      e.currentTarget.querySelectorAll<HTMLElement>('[role=radio]')
+    )
+    const current = items.indexOf(document.activeElement as HTMLElement)
+    if (current < 0) return
+    e.preventDefault()
+    const next = items[(current + step + items.length) % items.length]
+    next.focus()
+    next.click()
+  }
+  return (
+    <RadioContext value={{ value, onValueChange }}>
+      <div role='radiogroup' onKeyDown={handleKeyDown} {...props} />
+    </RadioContext>
+  )
+}
+
+function RadioItem({
+  value,
+  onClick,
+  ...props
+}: Omit<React.ComponentProps<'button'>, 'value'> & { value: string }) {
+  const group = use(RadioContext)
+  const checked = group?.value === value
+  return (
+    <button
+      type='button'
+      role='radio'
+      aria-checked={checked}
+      data-state={checked ? 'checked' : 'unchecked'}
+      tabIndex={checked ? 0 : -1}
+      onClick={(e) => {
+        onClick?.(e)
+        group?.onValueChange?.(value)
+      }}
+      {...props}
+    />
+  )
+}
+
 function RadioGroupItem({
   item,
   isTheme = false,
@@ -129,7 +197,7 @@ function RadioGroupItem({
   isTheme?: boolean
 }) {
   return (
-    <Item
+    <RadioItem
       value={item.value}
       className={cn('group outline-none', 'transition duration-200 ease-in')}
       aria-label={`Select ${item.label.toLowerCase()}`}
@@ -168,7 +236,7 @@ function RadioGroupItem({
       >
         {item.label}
       </div>
-    </Item>
+    </RadioItem>
   )
 }
 

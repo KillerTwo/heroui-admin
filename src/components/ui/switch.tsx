@@ -40,7 +40,7 @@ function Switch({
       <HeroSwitch.Content className='group/switch gap-0'>
         <HeroSwitch.Control
           className={cn(
-            // Old shadcn track: 32 x 18.4px, 1px transparent border.
+            // Old legacy track: 32 x 18.4px, 1px transparent border.
             'h-[1.15rem] w-8 shrink-0 items-center overflow-visible rounded-full border border-transparent bg-input shadow-xs transition-all outline-none dark:bg-input/80',
             'group-has-[input:focus-visible]/switch:border-ring group-has-[input:focus-visible]/switch:ring-[3px] group-has-[input:focus-visible]/switch:ring-ring/50',
             'group-data-[selected=true]/switch:bg-primary dark:group-data-[selected=true]/switch:bg-primary'

@@ -144,6 +144,34 @@ describe('SearchProvider and CommandMenu', () => {
       .not.toBeInTheDocument()
   })
 
+  it('filters by typing and runs the highlighted item on Enter', async () => {
+    const screen = await renderWithSearchProvider()
+
+    await openCommandPalette(screen)
+
+    await userEvent.fill(
+      screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER),
+      'tasks'
+    )
+    await userEvent.keyboard('{Enter}')
+
+    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/tasks' })
+    await expect
+      .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
+      .not.toBeInTheDocument()
+  })
+
+  it('moves the highlight with the arrow keys', async () => {
+    const screen = await renderWithSearchProvider()
+
+    await openCommandPalette(screen)
+
+    await userEvent.click(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
+    await userEvent.keyboard('{ArrowDown}{Enter}')
+
+    expect(mocks.navigate).toHaveBeenCalledTimes(1)
+  })
+
   it('shows empty state when the filter matches nothing', async () => {
     const screen = await renderWithSearchProvider()
 

@@ -23,7 +23,7 @@ function Separator({
       orientation={orientation}
       className={cn(
         // Hero adds rounded-sm, min-h-2 and self-stretch on vertical
-        // separators; shadcn has none of them.
+        // separators; legacy has none of them.
         'shrink-0 rounded-none bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:min-h-0 data-[orientation=vertical]:w-px data-[orientation=vertical]:self-auto',
         className
       )}

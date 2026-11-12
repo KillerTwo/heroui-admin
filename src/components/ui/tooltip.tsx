@@ -82,7 +82,7 @@ function TooltipContent({
       offset={sideOffset}
       className={cn(
         // Hero's .tooltip lives in a lower layer; these utilities restyle it
-        // to the shadcn primary tooltip.
+        // to the legacy primary tooltip.
         'z-50 w-fit max-w-none rounded-md bg-primary px-3 py-1.5 text-xs text-balance break-normal text-primary-foreground shadow-none',
         '**:data-[slot=overlay-arrow]:fill-primary **:data-[slot=overlay-arrow]:stroke-primary',
         className

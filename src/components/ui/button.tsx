@@ -4,12 +4,12 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 /**
- * Class source of truth for the shadcn look. It is also used standalone
+ * Class source of truth for the legacy look. It is also used standalone
  * (`buttonVariants()` on links / other elements), so it carries the full
  * visual contract. Hero's own `.button*` rules live in lower CSS layers, so
  * these utilities win; the extra resets below neutralise Hero defaults that
  * would otherwise leak through (svg margins, pressed scale, `--accent` brand
- * colour vs shadcn's `--accent` hover surface).
+ * colour vs legacy's `--accent` hover surface).
  */
 const buttonVariants = cva(
   "inline-flex w-auto items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transform-none",
@@ -68,7 +68,7 @@ function Button({
       variant={heroVariant[variant ?? 'default']}
       isDisabled={disabled}
       // Native <button> defaults to type=submit; React Aria defaults to
-      // button. Keep the shadcn behaviour so forms keep submitting.
+      // button. Keep the legacy behaviour so forms keep submitting.
       type={type}
       className={cn(buttonVariants({ variant, size, className }))}
       {...(props as Omit<

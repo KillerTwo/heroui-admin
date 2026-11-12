@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Card as HeroCard } from '@heroui/react'
 import { cn } from '@/lib/utils'
 
-// Hero renders Title as <h3> and Description as <p>; shadcn used plain
+// Hero renders Title as <h3> and Description as <p>; legacy used plain
 // <div>s, and consumers nest block content in them, so keep <div>.
 const asDiv = (props: object) => (
   <div {...(props as React.ComponentProps<'div'>)} />

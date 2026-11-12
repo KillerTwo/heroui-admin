@@ -1,18 +1,18 @@
 /*
  * HeroUI <-> project theme bridge.
  *
- * theme.css (shadcn semantic tokens) stays the visual source of truth.
+ * theme.css (legacy semantic tokens) stays the visual source of truth.
  * Because theme.css is unlayered it already wins over HeroUI's `@layer base`
  * theme for the names both define (--background, --foreground, --radius,
  * --border, --muted, --accent, --accent-foreground).
  *
- * Name collisions that CANNOT be bridged until the shadcn components are
+ * Name collisions that CANNOT be bridged until the legacy components are
  * replaced (their meaning differs between the two systems):
- *   --muted   shadcn: muted surface   | Hero: muted text colour
- *   --accent  shadcn: hover surface   | Hero: brand/accent colour
- * Mapping Hero accent -> --primary here would turn every shadcn `bg-accent`
+ *   --muted   legacy: muted surface   | Hero: muted text colour
+ *   --accent  legacy: hover surface   | Hero: brand/accent colour
+ * Mapping Hero accent -> --primary here would turn every legacy `bg-accent`
  * hover surface near-black and break the locked visual baselines, so those two
- * are intentionally left on shadcn semantics for now (see MAPPING.md).
+ * are intentionally left on legacy semantics for now (see MAPPING.md).
  *
  * Everything below only touches Hero-only variable names.
  */
@@ -28,11 +28,11 @@
   --overlay: var(--popover);
   --overlay-foreground: var(--popover-foreground);
 
-  /* Neutral "default" button/chip colour -> shadcn secondary */
+  /* Neutral "default" button/chip colour -> legacy secondary */
   --default: var(--secondary);
   --default-foreground: var(--secondary-foreground);
 
-  /* Form fields -> shadcn input styling */
+  /* Form fields -> legacy input styling */
   --field-background: transparent;
   --field-foreground: var(--foreground);
   --field-placeholder: var(--muted-foreground);
@@ -44,7 +44,7 @@
 }
 
 /*
- * Hero's .button gives icons -mx-0.5 my-0.5 (and a size). shadcn icons carry
+ * Hero's .button gives icons -mx-0.5 my-0.5 (and a size). legacy icons carry
  * no margin and callers add their own (ms-2, ...). Reset it in the same layer
  * (later in source order) so call-site margin utilities still win.
  */

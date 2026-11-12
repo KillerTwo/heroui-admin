@@ -3,7 +3,7 @@ import { Tabs as HeroTabs } from '@heroui/react'
 import { cn } from '@/lib/utils'
 
 // Hero's tab classes live in a lower CSS layer; the utilities below pin the
-// shadcn segmented-control look on top of React Aria's Tabs behaviour.
+// legacy segmented-control look on top of React Aria's Tabs behaviour.
 
 const SelectedTabContext = React.createContext<string | undefined>(undefined)
 

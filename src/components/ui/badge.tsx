@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const badgeVariants = cva(
-  // `rounded-md` / `gap-1`: pin shadcn metrics over Hero's chip
+  // `rounded-md` / `gap-1`: pin legacy metrics over Hero's chip
   // defaults (rounded-2xl, leading-5, gap-0.5).
   'inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium [--tw-leading:initial] w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden',
   {

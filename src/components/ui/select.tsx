@@ -115,7 +115,7 @@ function SelectTrigger({
     <HeroSelect.Trigger
       data-size={size}
       isDisabled={disabled}
-      // Hero's `.select__trigger` (lower layer) is re-skinned with the shadcn
+      // Hero's `.select__trigger` (lower layer) is re-skinned with the legacy
       // trigger classes; Hero's `bg-field` / `shadow-field` / radius yield.
       className={cn(
         "flex min-h-0 w-fit items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 py-2 pe-3 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
@@ -193,7 +193,7 @@ function SelectItem({
       isDisabled={disabled}
       textValue={textValue ?? (getTextValue(children) || value)}
       className={cn(
-        // Hero's list-box-item (lower layer) re-skinned to the shadcn item.
+        // Hero's list-box-item (lower layer) re-skinned to the legacy item.
         "relative flex min-h-0 w-full transform-none cursor-default items-center justify-start gap-2 rounded-sm bg-transparent py-1.5 ps-2 pe-8 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[focused=true]:bg-accent data-[focused=true]:text-accent-foreground data-[hovered=true]:bg-accent data-[hovered=true]:text-accent-foreground data-[pressed=true]:transform-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground",
         className as string
       )}

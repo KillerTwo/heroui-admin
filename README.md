@@ -22,45 +22,15 @@ I've been creating dashboard UIs at work and for my personal projects. I always 
 - RTL support
 
 <details>
-<summary>Customized Components (click to expand)</summary>
+<summary>UI components (click to expand)</summary>
 
-This project uses Shadcn UI components, but some have been slightly modified for better RTL (Right-to-Left) support and other improvements. These customized components differ from the original Shadcn UI versions.
-
-If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest add <component>`), it's generally safe for non-customized components. For the listed customized ones, you may need to manually merge changes to preserve the project's modifications and avoid overwriting RTL support or other updates.
-
-> If you don't require RTL support, you can safely update the 'RTL Updated Components' via the Shadcn CLI, as these changes are primarily for RTL compatibility. The 'Modified Components' may have other customizations to consider.
-
-### Modified Components
-
-- scroll-area
-- sonner
-- separator
-
-### RTL Updated Components
-
-- alert-dialog
-- calendar
-- command
-- dialog
-- dropdown-menu
-- select
-- table
-- sheet
-- sidebar
-- switch
-
-**Notes:**
-
-- **Modified Components**: These have general updates, potentially including RTL adjustments.
-- **RTL Updated Components**: These have specific changes for RTL language support (e.g., layout, positioning).
-- For implementation details, check the source files in `src/components/ui/`.
-- All other Shadcn UI components in the project are standard and can be safely updated via the CLI.
+The components in `src/components/ui/` are thin adapters over [HeroUI v3](https://heroui.com) (React Aria + Tailwind) that keep the original API and look. A few are project-owned (`command`, `collapsible`, `sidebar`, `table`, `scroll-area`, `slot`). See `src/components/ui/MAPPING.md` for the per-component mapping and notes.
 
 </details>
 
 ## Tech Stack
 
-**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+**UI:** [HeroUI v3](https://heroui.com) (TailwindCSS + React Aria)
 
 **Build Tool:** [Vite](https://vitejs.dev/)
 

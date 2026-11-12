@@ -10,7 +10,7 @@ function Avatar({
     <HeroAvatar
       data-slot='avatar'
       className={cn(
-        // Hero root: size-10, bg-default; shadcn: size-8, transparent.
+        // Hero root: size-10, bg-default; legacy: size-8, transparent.
         'relative flex size-8 shrink-0 overflow-hidden rounded-full bg-transparent',
         className
       )}
@@ -40,7 +40,7 @@ function AvatarFallback({
     <HeroAvatar.Fallback
       data-slot='avatar-fallback'
       className={cn(
-        // Hero fallback adds text-sm/font-medium and a coloured text; shadcn
+        // Hero fallback adds text-sm/font-medium and a coloured text; legacy
         // inherits both from the surrounding text.
         'flex size-full items-center justify-center rounded-full bg-muted font-[inherit] text-[length:inherit] text-inherit',
         className

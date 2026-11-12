@@ -50,9 +50,9 @@ function Checkbox({
       <HeroCheckbox.Content className='group/checkbox gap-0'>
         <HeroCheckbox.Control
           className={cn(
-            // Visual contract of the old shadcn checkbox. `before:hidden`
+            // Visual contract of the old legacy checkbox. `before:hidden`
             // kills Hero's selected-fill pseudo element (it paints with the
-            // shadcn `--accent` hover grey).
+            // legacy `--accent` hover grey).
             'relative size-4 shrink-0 overflow-visible rounded-lg border border-input bg-transparent shadow-xs transition-shadow outline-none before:hidden dark:bg-input/30',
             'group-has-[input:focus-visible]/checkbox:border-ring group-has-[input:focus-visible]/checkbox:ring-[3px] group-has-[input:focus-visible]/checkbox:ring-ring/50',
             'group-data-[invalid=true]/checkbox:border-destructive group-data-[invalid=true]/checkbox:ring-destructive/20 dark:group-data-[invalid=true]/checkbox:ring-destructive/40',
