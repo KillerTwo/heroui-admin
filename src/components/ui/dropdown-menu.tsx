@@ -212,6 +212,8 @@ function DropdownMenuCheckboxItem({
       <Dropdown.Item
         id={id}
         data-slot='dropdown-menu-checkbox-item'
+        // Radix closed the menu after a checkbox item was selected
+        shouldCloseOnSelect
         isDisabled={disabled}
         textValue={props.textValue ?? getTextValue(children)}
         className={cn(itemBase, 'ps-8 pe-2', className)}
@@ -273,6 +275,8 @@ function DropdownMenuRadioItem({
     <Dropdown.Item
       id={value}
       data-slot='dropdown-menu-radio-item'
+      // Radix closed the menu after a radio item was selected
+      shouldCloseOnSelect
       isDisabled={disabled}
       textValue={props.textValue ?? getTextValue(children)}
       className={cn(itemBase, 'ps-8 pe-2', className)}
@@ -320,7 +324,10 @@ function DropdownMenuSeparator({
   return (
     <Separator
       data-slot='dropdown-menu-separator'
-      className={cn('-mx-1 my-1 h-px w-[calc(100%+0.5rem)] bg-border', className)}
+      className={cn(
+        '-mx-1 my-1 h-px w-[calc(100%+0.5rem)] bg-border',
+        className
+      )}
       {...props}
     />
   )

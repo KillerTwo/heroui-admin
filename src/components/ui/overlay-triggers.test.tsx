@@ -13,8 +13,11 @@ import {
 } from '@/components/ui/dialog'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
@@ -205,5 +208,110 @@ describe('overlay triggers (Radix asChild call-site contract)', () => {
 
     await userEvent.hover(getByText('Truncated text'))
     await expect.element(getByText('Full text').first()).toBeInTheDocument()
+  })
+
+  it('closes the menu after a checkbox item is selected (Radix behaviour)', async () => {
+    const onCheckedChange = vi.fn()
+    const { getByRole } = await render(
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>Columns</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuCheckboxItem
+            checked={false}
+            onCheckedChange={onCheckedChange}
+          >
+            Title
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+    const trigger = getByRole('button', { name: 'Columns' })
+
+    await userEvent.click(trigger)
+    await userEvent.click(getByRole('menuitemcheckbox', { name: 'Title' }))
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+    await expect.element(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('closes the menu after a radio item is selected (Radix behaviour)', async () => {
+    const onValueChange = vi.fn()
+    const { getByRole } = await render(
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>Theme</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuRadioGroup value='a' onValueChange={onValueChange}>
+            <DropdownMenuRadioItem value='a'>Light</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value='b'>Dark</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+    const trigger = getByRole('button', { name: 'Theme' })
+
+    await userEvent.click(trigger)
+    await userEvent.click(getByRole('menuitemradio', { name: 'Dark' }))
+    expect(onValueChange).toHaveBeenCalledWith('b')
+    await expect.element(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('opens a dialog whose trigger is wrapped in a Fragment', async () => {
+    const { getByRole } = await render(
+      <Dialog>
+        <>
+          <DialogTrigger asChild>
+            <Button>Open fragment</Button>
+          </DialogTrigger>
+        </>
+        <DialogContent>
+          <DialogTitle>Fragment dialog</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    )
+
+    await userEvent.click(getByRole('button', { name: 'Open fragment' }))
+    await expect
+      .element(getByRole('heading', { name: 'Fragment dialog' }))
+      .toBeInTheDocument()
+  })
+
+  it('warns in DEV when a dialog trigger cannot attach', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    function Wrapped() {
+      return (
+        <DialogTrigger asChild>
+          <Button>Hidden trigger</Button>
+        </DialogTrigger>
+      )
+    }
+    await render(
+      <Dialog>
+        <Wrapped />
+        <DialogContent>
+          <DialogTitle>Never</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    )
+    expect(
+      warn.mock.calls.some(([m]) => String(m).includes('<DialogTrigger>'))
+    ).toBe(true)
+
+    warn.mockClear()
+    await render(
+      <Dialog>
+        <DialogTrigger asChild>
+          <>
+            <Button>Fragment child</Button>
+          </>
+        </DialogTrigger>
+      </Dialog>
+    )
+    expect(warn.mock.calls.some(([m]) => String(m).includes('asChild'))).toBe(
+      true
+    )
+    warn.mockRestore()
   })
 })

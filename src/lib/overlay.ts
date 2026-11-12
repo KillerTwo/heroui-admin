@@ -54,14 +54,24 @@ export const OverlayControlContext = React.createContext<OverlayControl | null>(
   null
 )
 
-/** Shallow check: is one of the direct children an element of `type`? */
+/**
+ * Shallow check: is one of the direct children (looking through Fragments) an
+ * element of `type`? A trigger hidden behind another component is not found.
+ */
 export function hasChildOfType(
   children: React.ReactNode,
   type: React.ElementType
 ): boolean {
-  return React.Children.toArray(children).some(
-    (child) => React.isValidElement(child) && child.type === type
-  )
+  return React.Children.toArray(children).some((child) => {
+    if (!React.isValidElement<{ children?: React.ReactNode }>(child)) {
+      return false
+    }
+    if (child.type === type) return true
+    return (
+      child.type === React.Fragment &&
+      hasChildOfType(child.props.children, type)
+    )
+  })
 }
 
 /**

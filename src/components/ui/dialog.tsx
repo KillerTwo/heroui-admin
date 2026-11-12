@@ -10,8 +10,11 @@ import {
 } from '@/lib/overlay'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { FocusFirstTabbable } from '@/components/ui/overlay-trigger'
-import { PressTrigger } from '@/components/ui/overlay-trigger'
+import {
+  FocusFirstTabbable,
+  PressTrigger,
+  useOrphanTriggerWarning,
+} from '@/components/ui/overlay-trigger'
 
 type DescriptionRegistry = {
   id: string
@@ -42,20 +45,24 @@ function Dialog({
     )
   }
   return (
-    <Modal
-      isOpen={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-      data-slot='dialog'
-    >
-      {children}
-    </Modal>
+    // reset: a trigger below this root is attached, not orphaned
+    <OverlayControlContext value={null}>
+      <Modal
+        isOpen={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
+        data-slot='dialog'
+      >
+        {children}
+      </Modal>
+    </OverlayControlContext>
   )
 }
 
 function DialogTrigger({
   ...props
 }: React.ComponentProps<typeof PressTrigger>) {
+  useOrphanTriggerWarning('DialogTrigger')
   return <PressTrigger data-slot='dialog-trigger' {...props} />
 }
 markPassthrough(DialogTrigger)

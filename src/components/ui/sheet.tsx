@@ -8,8 +8,11 @@ import {
 } from '@/lib/overlay'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { FocusFirstTabbable } from '@/components/ui/overlay-trigger'
-import { PressTrigger } from '@/components/ui/overlay-trigger'
+import {
+  FocusFirstTabbable,
+  PressTrigger,
+  useOrphanTriggerWarning,
+} from '@/components/ui/overlay-trigger'
 
 type DescriptionRegistry = {
   id: string
@@ -38,18 +41,22 @@ function Sheet({
     )
   }
   return (
-    <Drawer
-      isOpen={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-      data-slot='sheet'
-    >
-      {children}
-    </Drawer>
+    // reset: a trigger below this root is attached, not orphaned
+    <OverlayControlContext value={null}>
+      <Drawer
+        isOpen={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
+        data-slot='sheet'
+      >
+        {children}
+      </Drawer>
+    </OverlayControlContext>
   )
 }
 
 function SheetTrigger({ ...props }: React.ComponentProps<typeof PressTrigger>) {
+  useOrphanTriggerWarning('SheetTrigger')
   return <PressTrigger data-slot='sheet-trigger' {...props} />
 }
 markPassthrough(SheetTrigger)

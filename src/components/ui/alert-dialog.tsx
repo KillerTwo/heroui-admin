@@ -7,7 +7,10 @@ import {
 } from '@/lib/overlay'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { PressTrigger } from '@/components/ui/overlay-trigger'
+import {
+  PressTrigger,
+  useOrphanTriggerWarning,
+} from '@/components/ui/overlay-trigger'
 
 type DescriptionRegistry = {
   id: string
@@ -36,20 +39,24 @@ function AlertDialog({
     )
   }
   return (
-    <HeroAlertDialog
-      isOpen={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-      data-slot='alert-dialog'
-    >
-      {children}
-    </HeroAlertDialog>
+    // reset: a trigger below this root is attached, not orphaned
+    <OverlayControlContext value={null}>
+      <HeroAlertDialog
+        isOpen={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
+        data-slot='alert-dialog'
+      >
+        {children}
+      </HeroAlertDialog>
+    </OverlayControlContext>
   )
 }
 
 function AlertDialogTrigger({
   ...props
 }: React.ComponentProps<typeof PressTrigger>) {
+  useOrphanTriggerWarning('AlertDialogTrigger')
   return <PressTrigger data-slot='alert-dialog-trigger' {...props} />
 }
 markPassthrough(AlertDialogTrigger)
@@ -164,15 +171,11 @@ function AlertDialogDescription({
 }
 
 // `slot='close'` buttons are wired to the dialog's close handler by React Aria.
-function AlertDialogAction({
-  ...props
-}: React.ComponentProps<typeof Button>) {
+function AlertDialogAction({ ...props }: React.ComponentProps<typeof Button>) {
   return <Button type='button' {...({ slot: 'close' } as object)} {...props} />
 }
 
-function AlertDialogCancel({
-  ...props
-}: React.ComponentProps<typeof Button>) {
+function AlertDialogCancel({ ...props }: React.ComponentProps<typeof Button>) {
   return (
     <Button
       type='button'
