@@ -1,6 +1,8 @@
 @import 'tailwindcss';
+@import '@heroui/styles';
 @import 'tw-animate-css';
 @import './theme.css';
+@import './heroui-bridge.css';
 
 @custom-variant dark (&:is(.dark *));
 
