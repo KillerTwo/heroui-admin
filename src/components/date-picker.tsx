@@ -23,6 +23,7 @@ export function DatePicker({
     <Popover>
       <PopoverTrigger asChild>
         <Button
+          type='button'
           variant='outline'
           data-empty={!selected}
           className='w-60 justify-start text-start font-normal data-[empty=true]:text-muted-foreground'
