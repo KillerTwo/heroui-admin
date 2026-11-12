@@ -325,7 +325,7 @@ async function fillRequiredProfileFields(
     await user.fill(el, value)
   }
 
-  const roleSelect = screen.getByRole('combobox', { name: /Role/i })
+  const roleSelect = screen.getByRole('button', { name: /Role/i })
   await user.click(roleSelect)
   await user.click(
     screen.getByRole('option', { name: overrides?.roleOption ?? 'Superadmin' })

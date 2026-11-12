@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import {
   BadgeCheck,
   Bell,
@@ -46,7 +45,7 @@ export function NavUser({ user }: NavUserProps) {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size='lg'
-                className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                className='aria-expanded:bg-sidebar-accent aria-expanded:text-sidebar-accent-foreground'
               >
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage src={user.avatar} alt={user.name} />
@@ -60,7 +59,7 @@ export function NavUser({ user }: NavUserProps) {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
+              className='w-(--trigger-width) min-w-56 rounded-lg'
               side={isMobile ? 'bottom' : 'right'}
               align='end'
               sideOffset={4}
@@ -86,23 +85,17 @@ export function NavUser({ user }: NavUserProps) {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link to='/settings/account'>
-                    <BadgeCheck />
-                    Account
-                  </Link>
+                <DropdownMenuItem href='/settings/account'>
+                  <BadgeCheck />
+                  Account
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/settings'>
-                    <CreditCard />
-                    Billing
-                  </Link>
+                <DropdownMenuItem href='/settings'>
+                  <CreditCard />
+                  Billing
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to='/settings/notifications'>
-                    <Bell />
-                    Notifications
-                  </Link>
+                <DropdownMenuItem href='/settings/notifications'>
+                  <Bell />
+                  Notifications
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

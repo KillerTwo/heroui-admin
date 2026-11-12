@@ -1,59 +1,97 @@
 'use client'
 
 import * as React from 'react'
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
+import { Tooltip as HeroTooltip } from '@heroui/react'
+import {
+  markPassthrough,
+  toPlacement,
+  type OverlayAlign,
+  type OverlaySide,
+} from '@/lib/overlay'
 import { cn } from '@/lib/utils'
+import { FocusTrigger } from '@/components/ui/overlay-trigger'
 
+const TooltipDelayContext = React.createContext(0)
+
+/** React Aria has no provider; this only carries the default delay (ms). */
 function TooltipProvider({
   delayDuration = 0,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
+  children,
+}: {
+  delayDuration?: number
+  children?: React.ReactNode
+}) {
   return (
-    <TooltipPrimitive.Provider
-      data-slot='tooltip-provider'
-      delayDuration={delayDuration}
-      {...props}
-    />
+    <TooltipDelayContext value={delayDuration}>{children}</TooltipDelayContext>
   )
 }
 
 function Tooltip({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+  open,
+  defaultOpen,
+  onOpenChange,
+  delayDuration,
+  children,
+}: {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  delayDuration?: number
+  children?: React.ReactNode
+}) {
+  const defaultDelay = React.use(TooltipDelayContext)
   return (
-    <TooltipProvider>
-      <TooltipPrimitive.Root data-slot='tooltip' {...props} />
-    </TooltipProvider>
+    <HeroTooltip
+      data-slot='tooltip'
+      isOpen={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      delay={delayDuration ?? defaultDelay}
+      closeDelay={0}
+    >
+      {children}
+    </HeroTooltip>
   )
 }
 
 function TooltipTrigger({
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot='tooltip-trigger' {...props} />
+}: React.ComponentProps<typeof FocusTrigger>) {
+  return <FocusTrigger data-slot='tooltip-trigger' {...props} />
 }
+markPassthrough(TooltipTrigger)
 
 function TooltipContent({
   className,
-  sideOffset = 0,
+  side = 'top',
+  align = 'center',
+  sideOffset = 6,
+  hidden,
   children,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+}: Omit<React.ComponentProps<'div'>, 'dir'> & {
+  side?: OverlaySide
+  align?: OverlayAlign
+  sideOffset?: number
+}) {
+  if (hidden) return null
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        data-slot='tooltip-content'
-        sideOffset={sideOffset}
-        className={cn(
-          'z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-md bg-primary px-3 py-1.5 text-xs text-balance text-primary-foreground fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
-          className
-        )}
-        {...props}
-      >
-        {children}
-        <TooltipPrimitive.Arrow className='z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-primary fill-primary' />
-      </TooltipPrimitive.Content>
-    </TooltipPrimitive.Portal>
+    <HeroTooltip.Content
+      data-slot='tooltip-content'
+      placement={toPlacement(side, align)}
+      offset={sideOffset}
+      className={cn(
+        // Hero's .tooltip lives in a lower layer; these utilities restyle it
+        // to the shadcn primary tooltip.
+        'z-50 w-fit max-w-none rounded-md bg-primary px-3 py-1.5 text-xs text-balance break-normal text-primary-foreground shadow-none',
+        '**:data-[slot=overlay-arrow]:fill-primary **:data-[slot=overlay-arrow]:stroke-primary',
+        className
+      )}
+      {...(props as object)}
+    >
+      {children}
+      <HeroTooltip.Arrow />
+    </HeroTooltip.Content>
   )
 }
 

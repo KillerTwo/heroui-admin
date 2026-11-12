@@ -1,43 +1,81 @@
 import * as React from 'react'
-import * as SheetPrimitive from '@radix-ui/react-dialog'
+import { Drawer } from '@heroui/react'
 import { XIcon } from 'lucide-react'
+import {
+  hasChildOfType,
+  markPassthrough,
+  OverlayControlContext,
+} from '@/lib/overlay'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { FocusFirstTabbable } from '@/components/ui/overlay-trigger'
+import { PressTrigger } from '@/components/ui/overlay-trigger'
 
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot='sheet' {...props} />
+type DescriptionRegistry = {
+  id: string
+  setMounted: (mounted: boolean) => void
 }
 
-function SheetTrigger({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot='sheet-trigger' {...props} />
+const DescriptionContext = React.createContext<DescriptionRegistry | null>(null)
+
+function Sheet({
+  open,
+  defaultOpen,
+  onOpenChange,
+  children,
+}: {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
+}) {
+  if (!hasChildOfType(children, SheetTrigger)) {
+    // No trigger: skip DialogTrigger (it warns without a pressable child).
+    return (
+      <OverlayControlContext value={{ open, defaultOpen, onOpenChange }}>
+        {children}
+      </OverlayControlContext>
+    )
+  }
+  return (
+    <Drawer
+      isOpen={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      data-slot='sheet'
+    >
+      {children}
+    </Drawer>
+  )
 }
+
+function SheetTrigger({ ...props }: React.ComponentProps<typeof PressTrigger>) {
+  return <PressTrigger data-slot='sheet-trigger' {...props} />
+}
+markPassthrough(SheetTrigger)
 
 function SheetClose({
+  asChild,
+  children,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Close>) {
-  return <SheetPrimitive.Close data-slot='sheet-close' {...props} />
-}
-
-function SheetPortal({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot='sheet-portal' {...props} />
-}
-
-function SheetOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+}: React.ComponentProps<'button'> & { asChild?: boolean }) {
+  if (asChild && React.isValidElement<Record<string, unknown>>(children)) {
+    return React.cloneElement(children, {
+      'data-slot': 'sheet-close',
+      slot: 'close',
+      ...props,
+    })
+  }
   return (
-    <SheetPrimitive.Overlay
-      data-slot='sheet-overlay'
-      className={cn(
-        'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-        className
-      )}
+    <Button
+      data-slot='sheet-close'
+      type='button'
+      variant='ghost'
+      {...({ slot: 'close' } as object)}
       {...props}
-    />
+    >
+      {children}
+    </Button>
   )
 }
 
@@ -46,35 +84,55 @@ function SheetContent({
   children,
   side = 'right',
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Content> & {
+}: Omit<React.ComponentProps<'div'>, 'dir'> & {
   side?: 'top' | 'right' | 'bottom' | 'left'
 }) {
+  const control = React.use(OverlayControlContext)
+  const id = React.useId()
+  const [hasDescription, setHasDescription] = React.useState(false)
+  const registry = React.useMemo(
+    () => ({ id, setMounted: setHasDescription }),
+    [id]
+  )
+
   return (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content
-        data-slot='sheet-content'
-        className={cn(
-          'fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500',
-          side === 'right' &&
-            'inset-y-0 inset-e-0 h-full w-3/4 border-s data-[state=closed]:slide-out-to-end data-[state=open]:slide-in-from-end sm:max-w-sm',
-          side === 'left' &&
-            'inset-y-0 inset-s-0 h-full w-3/4 border-e data-[state=closed]:slide-out-to-start data-[state=open]:slide-in-from-start sm:max-w-sm',
-          side === 'top' &&
-            'inset-x-0 top-0 h-auto border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
-          side === 'bottom' &&
-            'inset-x-0 bottom-0 h-auto border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-          className
-        )}
-        {...props}
-      >
-        {children}
-        <SheetPrimitive.Close className='absolute inset-e-4 top-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-secondary'>
-          <XIcon className='size-4' />
-          <span className='sr-only'>Close</span>
-        </SheetPrimitive.Close>
-      </SheetPrimitive.Content>
-    </SheetPortal>
+    <Drawer.Backdrop
+      data-slot='sheet-overlay'
+      variant='transparent'
+      className='z-50 bg-black/50'
+      isOpen={control?.open}
+      defaultOpen={control?.defaultOpen}
+      onOpenChange={control?.onOpenChange}
+    >
+      <Drawer.Content placement={side} className='z-50'>
+        <DescriptionContext value={registry}>
+          {/* Hero's .drawer__dialog (lower layer) is re-skinned by utilities */}
+          <Drawer.Dialog
+            data-slot='sheet-content'
+            aria-describedby={hasDescription ? id : undefined}
+            className={cn(
+              'relative flex flex-col gap-4 rounded-none bg-background p-0 shadow-lg',
+              side === 'right' &&
+                'h-full w-3/4 max-w-none border-s sm:max-w-sm',
+              side === 'left' && 'h-full w-3/4 max-w-none border-e sm:max-w-sm',
+              side === 'top' && 'h-auto max-h-none w-full border-b',
+              side === 'bottom' && 'h-auto max-h-none w-full border-t',
+              className
+            )}
+            {...(props as object)}
+          >
+            <FocusFirstTabbable />
+            {children}
+            <Drawer.CloseTrigger
+              data-slot='sheet-close'
+              className="absolute inset-e-4 top-4 size-auto rounded-xs bg-transparent p-0 text-inherit opacity-70 ring-offset-background transition-opacity hover:bg-transparent hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:m-0 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+            >
+              <XIcon />
+            </Drawer.CloseTrigger>
+          </Drawer.Dialog>
+        </DescriptionContext>
+      </Drawer.Content>
+    </Drawer.Backdrop>
   )
 }
 
@@ -101,9 +159,9 @@ function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
 function SheetTitle({
   className,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Title>) {
+}: React.ComponentProps<typeof Drawer.Heading>) {
   return (
-    <SheetPrimitive.Title
+    <Drawer.Heading
       data-slot='sheet-title'
       className={cn('font-semibold text-foreground', className)}
       {...props}
@@ -114,9 +172,16 @@ function SheetTitle({
 function SheetDescription({
   className,
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Description>) {
+}: React.ComponentProps<'div'>) {
+  const registry = React.use(DescriptionContext)
+  const setMounted = registry?.setMounted
+  React.useLayoutEffect(() => {
+    setMounted?.(true)
+    return () => setMounted?.(false)
+  }, [setMounted])
   return (
-    <SheetPrimitive.Description
+    <div
+      id={registry?.id}
       data-slot='sheet-description'
       className={cn('text-sm text-muted-foreground', className)}
       {...props}

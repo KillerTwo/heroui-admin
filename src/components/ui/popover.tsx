@@ -1,45 +1,73 @@
 import * as React from 'react'
-import * as PopoverPrimitive from '@radix-ui/react-popover'
+import { Popover as HeroPopover } from '@heroui/react'
+import {
+  markPassthrough,
+  toPlacement,
+  type OverlayAlign,
+  type OverlaySide,
+} from '@/lib/overlay'
 import { cn } from '@/lib/utils'
+import { PressTrigger } from '@/components/ui/overlay-trigger'
 
 function Popover({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot='popover' {...props} />
+  open,
+  defaultOpen,
+  onOpenChange,
+  children,
+}: {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
+}) {
+  return (
+    <HeroPopover
+      isOpen={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+    >
+      {children}
+    </HeroPopover>
+  )
 }
 
 function PopoverTrigger({
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot='popover-trigger' {...props} />
+}: React.ComponentProps<typeof PressTrigger>) {
+  return <PressTrigger data-slot='popover-trigger' {...props} />
 }
+markPassthrough(PopoverTrigger)
 
 function PopoverContent({
   className,
+  side = 'bottom',
   align = 'center',
   sideOffset = 4,
+  children,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+}: Omit<React.ComponentProps<'div'>, 'dir'> & {
+  side?: OverlaySide
+  align?: OverlayAlign
+  sideOffset?: number
+}) {
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
-        data-slot='popover-content'
-        align={align}
-        sideOffset={sideOffset}
-        className={cn(
-          'z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
-          className
-        )}
-        {...props}
-      />
-    </PopoverPrimitive.Portal>
+    <HeroPopover.Content
+      data-slot='popover-content'
+      placement={toPlacement(side, align)}
+      offset={sideOffset}
+      // Hero's `.popover` rules live in a lower layer than these utilities.
+      className={cn(
+        'z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden',
+        className
+      )}
+      {...(props as object)}
+    >
+      {/* padding lives on the content (callers pass `p-0`), not the dialog */}
+      <HeroPopover.Dialog className='p-0 outline-hidden'>
+        {children}
+      </HeroPopover.Dialog>
+    </HeroPopover.Content>
   )
 }
 
-function PopoverAnchor({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
-  return <PopoverPrimitive.Anchor data-slot='popover-anchor' {...props} />
-}
-
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor }
+export { Popover, PopoverTrigger, PopoverContent }

@@ -10,6 +10,7 @@ import {
 } from 'react-hook-form'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { Slot } from '@radix-ui/react-slot'
+import { markPassthrough } from '@/lib/overlay'
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 
@@ -56,6 +57,7 @@ const useFormField = () => {
     id,
     name: fieldContext.name,
     formItemId: `${id}-form-item`,
+    formLabelId: `${id}-form-item-label`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
     ...fieldState,
@@ -88,10 +90,11 @@ function FormLabel({
   className,
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const { error, formItemId } = useFormField()
+  const { error, formItemId, formLabelId } = useFormField()
 
   return (
     <Label
+      id={formLabelId}
       data-slot='form-label'
       data-error={!!error}
       className={cn('data-[error=true]:text-destructive', className)}
@@ -102,12 +105,14 @@ function FormLabel({
 }
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+  const { error, formItemId, formLabelId, formDescriptionId, formMessageId } =
+    useFormField()
 
   return (
     <Slot
       data-slot='form-control'
       id={formItemId}
+      aria-labelledby={formLabelId}
       aria-describedby={
         !error
           ? `${formDescriptionId}`
@@ -118,6 +123,10 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
     />
   )
 }
+
+// FormControl only forwards props to its child (usually a Hero Button), so an
+// overlay trigger can hand its press/focus props straight through it.
+markPassthrough(FormControl)
 
 function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   const { formDescriptionId } = useFormField()

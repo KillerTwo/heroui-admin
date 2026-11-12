@@ -46,7 +46,7 @@ describe('TasksMutateDrawer', () => {
     const desc = getByText(/Update the task/i)
 
     const titleInput = getByRole('textbox', { name: /Title/i })
-    const statusSelect = getByRole('combobox', { name: /Status/i })
+    const statusSelect = getByRole('button', { name: /Status/i })
     const labelRadio = getByRole('radio', { name: MOCK_TASK.label })
     const priorityRadio = getByRole('radio', { name: MOCK_TASK.priority })
 
@@ -89,7 +89,7 @@ describe('TasksMutateDrawer', () => {
     const titleInput = getByRole('textbox', { name: /Title/i })
     await userEvent.fill(titleInput, 'New task title')
 
-    const statusSelect = getByRole('combobox', { name: /Status/i })
+    const statusSelect = getByRole('button', { name: /Status/i })
     await userEvent.click(statusSelect)
     await userEvent.click(getByRole('option', { name: /Todo/i }))
 
@@ -149,7 +149,7 @@ describe('TasksMutateDrawer', () => {
     await userEvent.fill(titleInput, 'Draft title')
     await expect.element(titleInput).toHaveValue('Draft title')
 
-    const statusSelect = getByRole('combobox', { name: /Status/i })
+    const statusSelect = getByRole('button', { name: /Status/i })
     await userEvent.click(statusSelect)
     await userEvent.click(getByRole('option', { name: /Todo/i }))
     await expect.element(statusSelect).toHaveTextContent(/Todo/i)

@@ -1,62 +1,103 @@
 import * as React from 'react'
-import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
+import { AlertDialog as HeroAlertDialog } from '@heroui/react'
+import {
+  hasChildOfType,
+  markPassthrough,
+  OverlayControlContext,
+} from '@/lib/overlay'
 import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
+import { PressTrigger } from '@/components/ui/overlay-trigger'
+
+type DescriptionRegistry = {
+  id: string
+  setMounted: (mounted: boolean) => void
+}
+
+const DescriptionContext = React.createContext<DescriptionRegistry | null>(null)
 
 function AlertDialog({
-  ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
-  return <AlertDialogPrimitive.Root data-slot='alert-dialog' {...props} />
+  open,
+  defaultOpen,
+  onOpenChange,
+  children,
+}: {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
+}) {
+  if (!hasChildOfType(children, AlertDialogTrigger)) {
+    // No trigger: skip DialogTrigger (it warns without a pressable child).
+    return (
+      <OverlayControlContext value={{ open, defaultOpen, onOpenChange }}>
+        {children}
+      </OverlayControlContext>
+    )
+  }
+  return (
+    <HeroAlertDialog
+      isOpen={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      data-slot='alert-dialog'
+    >
+      {children}
+    </HeroAlertDialog>
+  )
 }
 
 function AlertDialogTrigger({
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
-  return (
-    <AlertDialogPrimitive.Trigger data-slot='alert-dialog-trigger' {...props} />
-  )
+}: React.ComponentProps<typeof PressTrigger>) {
+  return <PressTrigger data-slot='alert-dialog-trigger' {...props} />
 }
-
-function AlertDialogPortal({
-  ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
-  return (
-    <AlertDialogPrimitive.Portal data-slot='alert-dialog-portal' {...props} />
-  )
-}
-
-function AlertDialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
-  return (
-    <AlertDialogPrimitive.Overlay
-      data-slot='alert-dialog-overlay'
-      className={cn(
-        'fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-        className
-      )}
-      {...props}
-    />
-  )
-}
+markPassthrough(AlertDialogTrigger)
 
 function AlertDialogContent({
   className,
+  children,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Content>) {
+}: Omit<React.ComponentProps<'div'>, 'dir'>) {
+  const control = React.use(OverlayControlContext)
+  const id = React.useId()
+  const [hasDescription, setHasDescription] = React.useState(false)
+  const registry = React.useMemo(
+    () => ({ id, setMounted: setHasDescription }),
+    [id]
+  )
+
   return (
-    <AlertDialogPortal>
-      <AlertDialogOverlay />
-      <AlertDialogPrimitive.Content
-        data-slot='alert-dialog-content'
-        className={cn(
-          'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg',
-          className
-        )}
-        {...props}
-      />
-    </AlertDialogPortal>
+    <HeroAlertDialog.Backdrop
+      data-slot='alert-dialog-overlay'
+      variant='transparent'
+      isOpen={control?.open}
+      defaultOpen={control?.defaultOpen}
+      onOpenChange={control?.onOpenChange}
+      // Radix alert dialogs still close on Escape (not on outside press);
+      // Hero disables Escape by default.
+      isKeyboardDismissDisabled={false}
+      className='z-50 bg-black/50'
+    >
+      <HeroAlertDialog.Container
+        placement='center'
+        className='w-full p-0 sm:w-full sm:p-0'
+      >
+        <DescriptionContext value={registry}>
+          <HeroAlertDialog.Dialog
+            data-slot='alert-dialog-content'
+            aria-describedby={hasDescription ? id : undefined}
+            className={cn(
+              'relative grid w-full max-w-[calc(100%-2rem)] gap-4 overflow-visible rounded-lg border bg-background p-6 shadow-lg sm:max-w-lg',
+              className
+            )}
+            {...(props as object)}
+          >
+            {children}
+          </HeroAlertDialog.Dialog>
+        </DescriptionContext>
+      </HeroAlertDialog.Container>
+    </HeroAlertDialog.Backdrop>
   )
 }
 
@@ -92,9 +133,9 @@ function AlertDialogFooter({
 function AlertDialogTitle({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
+}: React.ComponentProps<typeof HeroAlertDialog.Heading>) {
   return (
-    <AlertDialogPrimitive.Title
+    <HeroAlertDialog.Heading
       data-slot='alert-dialog-title'
       className={cn('text-lg font-semibold', className)}
       {...props}
@@ -105,9 +146,16 @@ function AlertDialogTitle({
 function AlertDialogDescription({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
+}: React.ComponentProps<'div'>) {
+  const registry = React.use(DescriptionContext)
+  const setMounted = registry?.setMounted
+  React.useLayoutEffect(() => {
+    setMounted?.(true)
+    return () => setMounted?.(false)
+  }, [setMounted])
   return (
-    <AlertDialogPrimitive.Description
+    <div
+      id={registry?.id}
       data-slot='alert-dialog-description'
       className={cn('text-sm text-muted-foreground', className)}
       {...props}
@@ -115,25 +163,21 @@ function AlertDialogDescription({
   )
 }
 
+// `slot='close'` buttons are wired to the dialog's close handler by React Aria.
 function AlertDialogAction({
-  className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
-  return (
-    <AlertDialogPrimitive.Action
-      className={cn(buttonVariants(), className)}
-      {...props}
-    />
-  )
+}: React.ComponentProps<typeof Button>) {
+  return <Button type='button' {...({ slot: 'close' } as object)} {...props} />
 }
 
 function AlertDialogCancel({
-  className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
+}: React.ComponentProps<typeof Button>) {
   return (
-    <AlertDialogPrimitive.Cancel
-      className={cn(buttonVariants({ variant: 'outline' }), className)}
+    <Button
+      type='button'
+      variant='outline'
+      {...({ slot: 'close' } as object)}
       {...props}
     />
   )
@@ -141,8 +185,6 @@ function AlertDialogCancel({
 
 export {
   AlertDialog,
-  AlertDialogPortal,
-  AlertDialogOverlay,
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,

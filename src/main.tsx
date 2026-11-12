@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
+import { RouterProvider as AriaRouterProvider } from '@heroui/react'
 import { AxiosError } from 'axios'
 import {
   QueryCache,
@@ -97,7 +98,13 @@ if (!rootElement.innerHTML) {
         <ThemeProvider>
           <FontProvider>
             <DirectionProvider>
-              <RouterProvider router={router} />
+              {/* React Aria links (menu items with href) navigate through TanStack Router */}
+              <AriaRouterProvider
+                navigate={(to) => router.history.push(to)}
+                useHref={(href) => router.history.createHref(href)}
+              >
+                <RouterProvider router={router} />
+              </AriaRouterProvider>
             </DirectionProvider>
           </FontProvider>
         </ThemeProvider>

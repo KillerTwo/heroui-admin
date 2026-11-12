@@ -1,65 +1,48 @@
 import * as React from 'react'
-import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area'
 import { cn } from '@/lib/utils'
 
-interface ScrollAreaProps extends React.ComponentProps<
-  typeof ScrollAreaPrimitive.Root
-> {
+/**
+ * HeroUI v3 ships no ScrollArea (its `ScrollShadow` adds a fade mask, which
+ * would change the look), so this is a project-owned wrapper around native
+ * scrolling. The thin themed scrollbar comes from the global
+ * `scrollbar-width: thin; scrollbar-color: var(--border) transparent` rule.
+ */
+interface ScrollAreaProps extends React.ComponentProps<'div'> {
   orientation?: 'vertical' | 'horizontal'
+  /** Radix API leftovers; native scrollbars are always overlay-on-demand. */
+  type?: 'auto' | 'always' | 'scroll' | 'hover'
+  scrollHideDelay?: number
 }
 
 function ScrollArea({
   className,
   children,
   orientation = 'vertical',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  type,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  scrollHideDelay,
   ...props
 }: ScrollAreaProps) {
   return (
-    <ScrollAreaPrimitive.Root
+    <div
       data-slot='scroll-area'
       className={cn('relative', className)}
       {...props}
     >
-      <ScrollAreaPrimitive.Viewport
+      <div
         data-slot='scroll-area-viewport'
         className={cn(
           'size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1',
-          orientation === 'horizontal' && 'overflow-x-auto!'
+          orientation === 'horizontal'
+            ? 'overflow-x-auto overflow-y-hidden'
+            : 'overflow-x-hidden overflow-y-auto'
         )}
       >
         {children}
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar orientation={orientation} />
-      <ScrollAreaPrimitive.Corner />
-    </ScrollAreaPrimitive.Root>
+      </div>
+    </div>
   )
 }
 
-function ScrollBar({
-  className,
-  orientation = 'vertical',
-  ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
-  return (
-    <ScrollAreaPrimitive.ScrollAreaScrollbar
-      data-slot='scroll-area-scrollbar'
-      orientation={orientation}
-      className={cn(
-        'flex touch-none p-px transition-colors select-none',
-        orientation === 'vertical' &&
-          'h-full w-2.5 border-l border-l-transparent',
-        orientation === 'horizontal' &&
-          'h-2.5 flex-col border-t border-t-transparent',
-        className
-      )}
-      {...props}
-    >
-      <ScrollAreaPrimitive.ScrollAreaThumb
-        data-slot='scroll-area-thumb'
-        className='relative flex-1 rounded-full bg-border'
-      />
-    </ScrollAreaPrimitive.ScrollAreaScrollbar>
-  )
-}
-
-export { ScrollArea, ScrollBar }
+export { ScrollArea }
