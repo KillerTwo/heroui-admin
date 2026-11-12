@@ -19,11 +19,11 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 | `calendar.tsx` | lib `react-day-picker` (day button is the project Hero `Button`; nav buttons use `buttonVariants`; no Radix) | done |
 | `card.tsx` | Hero `Card` (Title/Description rendered as `div`; `CardAction` local) | done |
 | `checkbox.tsx` | Hero `Checkbox` (Radix-style `checked`/`onCheckedChange`) | done |
-| `collapsible.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `command.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `collapsible.tsx` | local (context + `asChild` via local `Slot`; height animation = `grid-template-rows` 0fr/1fr, content unmounts after close; no Radix) | done |
+| `command.tsx` | lib `cmdk` kept as independent lib (shadcn classes unchanged; shell is Hero `Modal` via `dialog.tsx`; no direct Radix import) | done |
 | `dialog.tsx` | Hero `Modal` (Backdrop/Container/Dialog; X is `Modal.CloseTrigger`; `modal` accepted+ignored) | done |
 | `dropdown-menu.tsx` | Hero `Dropdown` (Popover/Menu/Item/Section; `onSelect`->`onAction`, `href` items, checkbox/radio = selection Sections) | done |
-| `form.tsx` | local (RHF context; `Label` = Hero label; `FormControl` uses a local Slot-style prop merge instead of Radix `Slot`, still `markPassthrough` + `aria-labelledby`) | done |
+| `form.tsx` | local (RHF context; `Label` = Hero label; `FormControl` uses the local `slot.tsx` prop merge instead of Radix `Slot`, still `markPassthrough` + `aria-labelledby`) | done |
 | `input-otp.tsx` | lib `input-otp` (unchanged; already Radix-free, shadcn slot styling kept) | done |
 | `input.tsx` | Hero `Input` (RAC input) | done |
 | `label.tsx` | Hero `Label` (`slot={null}` opts out of RAC label context) | done |
@@ -33,7 +33,7 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 | `select.tsx` | Hero `Select` + `ListBox` (value/onValueChange kept; trigger is a `button`, not `combobox`; scroll buttons dropped) | done |
 | `separator.tsx` | Hero `Separator` (`decorative` -> `isDecorative`) | done |
 | `sheet.tsx` | Hero `Drawer` (side -> placement; X is `Drawer.CloseTrigger`, direct child of the dialog) | done |
-| `sidebar.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `sidebar.tsx` | local (Provider/cookie `sidebar_state`/shortcut unchanged; local `Slot` replaces Radix `Slot`; mobile = Hero `Drawer` via `sheet.tsx`, tooltip = Hero Tooltip, Button/Input/Separator/Skeleton = Hero adapters) | done |
 | `skeleton.tsx` | Hero `Skeleton` (pulse) | done |
 | `sonner.tsx` | Hero `Toast` (sonner-compatible facade: `toast` / `.error`->danger / `.message` / `.promise` / `.dismiss`, `Toaster` = `Toast.Provider` bottom end, `duration` -> `timeout`) | done |
 | `switch.tsx` | Hero `Switch` (Radix-style `checked`/`onCheckedChange`) | done |
@@ -65,3 +65,10 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 - App code no longer imports `sonner`; use `toast` / `Toaster` from `@/components/ui/sonner` (tests mock that path). Removed packages: `sonner`, `@radix-ui/react-label`. `@radix-ui/react-slot` remains only for `sidebar.tsx`.
 - Hero toast has no `error`/`message`/`duration`; the facade maps them (default 5000ms like the old `<Toaster duration={5000}/>`).
 - Regression coverage: `form-toast-calendar.test.tsx`.
+
+## Task 7 notes (sidebar, collapsible, command)
+
+- New `slot.tsx` (local Radix `Slot` replacement, extracted from `form.tsx`) is shared by `form`, `collapsible` and `sidebar`. Removed packages: `@radix-ui/react-collapsible`, `@radix-ui/react-slot`.
+- `.CollapsibleContent` keyframes / `--radix-collapsible-content-height` removed from `index.css`; `CollapsibleContent` animates itself (`grid-template-rows` transition, 200ms). Visual tests run with `animations: 'disabled'`.
+- `cmdk` 1.1.1 is kept as a standalone lib, but note it still depends on `@radix-ui/react-dialog` / `react-primitive` / `react-id` internally (not imported by our code). Replacing it would need a Hero `ListBox`/`Autocomplete` rewrite.
+- Regression coverage: `sidebar-collapsible.test.tsx`. Still-used direct Radix packages: `direction`, `radio-group` (config-drawer), `icons`.

@@ -104,7 +104,7 @@ function SidebarMenuCollapsible({
             <ChevronRight className='ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 rtl:rotate-180' />
           </SidebarMenuButton>
         </CollapsibleTrigger>
-        <CollapsibleContent className='CollapsibleContent'>
+        <CollapsibleContent>
           <SidebarMenuSub>
             {item.items.map((subItem) => (
               <SidebarMenuSubItem key={subItem.title}>
@@ -161,7 +161,9 @@ function SidebarMenuCollapsedDropdown({
             >
               {sub.icon && <sub.icon />}
               <span className='max-w-52 text-wrap'>{sub.title}</span>
-              {sub.badge && <span className='ms-auto text-xs'>{sub.badge}</span>}
+              {sub.badge && (
+                <span className='ms-auto text-xs'>{sub.badge}</span>
+              )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
