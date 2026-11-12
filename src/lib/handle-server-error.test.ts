@@ -4,7 +4,7 @@ import { handleServerError } from './handle-server-error'
 
 const toastError = vi.hoisted(() => vi.fn())
 
-vi.mock('sonner', () => ({
+vi.mock('@/components/ui/sonner', () => ({
   toast: {
     error: toastError,
   },

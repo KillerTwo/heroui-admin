@@ -16,7 +16,7 @@ const toastPromise = vi.hoisted(() =>
   })
 )
 
-vi.mock('sonner', () => ({ toast: { promise: toastPromise } }))
+vi.mock('@/components/ui/sonner', () => ({ toast: { promise: toastPromise } }))
 
 describe('SignUpForm', () => {
   let screen: RenderResult

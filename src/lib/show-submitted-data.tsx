@@ -1,4 +1,4 @@
-import { toast } from 'sonner'
+import { toast } from '@/components/ui/sonner'
 
 export function showSubmittedData(
   data: unknown,

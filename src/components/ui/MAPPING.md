@@ -16,15 +16,15 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 | `avatar.tsx` | Hero `Avatar` (Root/Image/Fallback) | done |
 | `badge.tsx` | Hero `Chip` (shadcn classes pin metrics; no `asChild`) | done |
 | `button.tsx` | Hero `Button` (`buttonVariants` kept as class source; no `asChild`; native `type=submit` default kept) | done |
-| `calendar.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `calendar.tsx` | lib `react-day-picker` (day button is the project Hero `Button`; nav buttons use `buttonVariants`; no Radix) | done |
 | `card.tsx` | Hero `Card` (Title/Description rendered as `div`; `CardAction` local) | done |
 | `checkbox.tsx` | Hero `Checkbox` (Radix-style `checked`/`onCheckedChange`) | done |
 | `collapsible.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `command.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `dialog.tsx` | Hero `Modal` (Backdrop/Container/Dialog; X is `Modal.CloseTrigger`; `modal` accepted+ignored) | done |
 | `dropdown-menu.tsx` | Hero `Dropdown` (Popover/Menu/Item/Section; `onSelect`->`onAction`, `href` items, checkbox/radio = selection Sections) | done |
-| `form.tsx` | TBD (Hero / local / standalone lib) | pending (Task 5 only added `formLabelId` + `aria-labelledby`, FormControl passthrough) |
-| `input-otp.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `form.tsx` | local (RHF context; `Label` = Hero label; `FormControl` uses a local Slot-style prop merge instead of Radix `Slot`, still `markPassthrough` + `aria-labelledby`) | done |
+| `input-otp.tsx` | lib `input-otp` (unchanged; already Radix-free, shadcn slot styling kept) | done |
 | `input.tsx` | Hero `Input` (RAC input) | done |
 | `label.tsx` | Hero `Label` (`slot={null}` opts out of RAC label context) | done |
 | `popover.tsx` | Hero `Popover` (Trigger = `PressTrigger`; no `PopoverAnchor`) | done |
@@ -35,7 +35,7 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 | `sheet.tsx` | Hero `Drawer` (side -> placement; X is `Drawer.CloseTrigger`, direct child of the dialog) | done |
 | `sidebar.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `skeleton.tsx` | Hero `Skeleton` (pulse) | done |
-| `sonner.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `sonner.tsx` | Hero `Toast` (sonner-compatible facade: `toast` / `.error`->danger / `.message` / `.promise` / `.dismiss`, `Toaster` = `Toast.Provider` bottom end, `duration` -> `timeout`) | done |
 | `switch.tsx` | Hero `Switch` (Radix-style `checked`/`onCheckedChange`) | done |
 | `table.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `tabs.tsx` | Hero `Tabs` (`value`/`onValueChange` kept; every panel mounted, only the selected renders children) | done |
@@ -59,3 +59,9 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 - Select trigger is a `button[aria-haspopup=listbox]` (React Aria cannot set `role=combobox`); `FormControl` now sets `aria-labelledby` so the label still names it.
 - Dropped exports: `Dialog/Sheet/AlertDialog` Portal + Overlay, `DropdownMenuPortal`, `PopoverAnchor`, `ScrollBar`, `SelectScrollUp/DownButton`.
 - Removed Radix packages: alert-dialog, dialog, dropdown-menu, popover, select, tabs, tooltip, scroll-area. Still used: collapsible, direction, label, radio-group, slot, icons.
+
+## Task 6 notes (form, toast, calendar, OTP)
+
+- App code no longer imports `sonner`; use `toast` / `Toaster` from `@/components/ui/sonner` (tests mock that path). Removed packages: `sonner`, `@radix-ui/react-label`. `@radix-ui/react-slot` remains only for `sidebar.tsx`.
+- Hero toast has no `error`/`message`/`duration`; the facade maps them (default 5000ms like the old `<Toaster duration={5000}/>`).
+- Regression coverage: `form-toast-calendar.test.tsx`.
