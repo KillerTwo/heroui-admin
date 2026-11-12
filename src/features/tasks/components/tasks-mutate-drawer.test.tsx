@@ -82,7 +82,7 @@ describe('TasksMutateDrawer', () => {
 
   it('submits create form and shows submitted data', async () => {
     const onOpenChange = vi.fn()
-    const { getByRole } = await render(
+    const { getByRole, getByText } = await render(
       <TasksMutateDrawer open onOpenChange={onOpenChange} />
     )
 
@@ -93,8 +93,9 @@ describe('TasksMutateDrawer', () => {
     await userEvent.click(statusSelect)
     await userEvent.click(getByRole('option', { name: /Todo/i }))
 
-    await userEvent.click(getByRole('radio', { name: /^Bug$/i }))
-    await userEvent.click(getByRole('radio', { name: /^Low$/i }))
+    // React Aria radios keep the native input visually hidden; click the label.
+    await userEvent.click(getByText(/^Bug$/i))
+    await userEvent.click(getByText(/^Low$/i))
 
     const saveButton = getByRole('button', { name: /Save changes/i })
     await userEvent.click(saveButton)
@@ -142,7 +143,7 @@ describe('TasksMutateDrawer', () => {
       )
     }
 
-    const { getByRole } = await render(<Harness />)
+    const { getByRole, getByText } = await render(<Harness />)
 
     const titleInput = getByRole('textbox', { name: /Title/i })
     await userEvent.fill(titleInput, 'Draft title')
@@ -154,11 +155,11 @@ describe('TasksMutateDrawer', () => {
     await expect.element(statusSelect).toHaveTextContent(/Todo/i)
 
     const labelRadio = getByRole('radio', { name: /^Documentation$/i })
-    await userEvent.click(labelRadio)
+    await userEvent.click(getByText(/^Documentation$/i))
     await expect.element(labelRadio).toBeChecked()
 
     const priorityRadio = getByRole('radio', { name: /^High$/i })
-    await userEvent.click(priorityRadio)
+    await userEvent.click(getByText(/^High$/i))
     await expect.element(priorityRadio).toBeChecked()
 
     const closeButtons = getByRole('dialog')

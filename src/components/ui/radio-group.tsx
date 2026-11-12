@@ -1,41 +1,85 @@
 import * as React from 'react'
-import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
+import { Radio as HeroRadio, RadioGroup as HeroRadioGroup } from '@heroui/react'
 import { CircleIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+type RadioGroupProps = Omit<
+  React.ComponentProps<typeof HeroRadioGroup>,
+  'className' | 'isDisabled' | 'isRequired' | 'onChange'
+> & {
+  className?: string
+  onValueChange?: (value: string) => void
+  disabled?: boolean
+  required?: boolean
+}
+
 function RadioGroup({
   className,
+  onValueChange,
+  disabled,
+  required,
   ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
+}: RadioGroupProps) {
   return (
-    <RadioGroupPrimitive.Root
+    <HeroRadioGroup
       data-slot='radio-group'
-      className={cn('grid gap-3', className)}
+      onChange={onValueChange}
+      isDisabled={disabled}
+      isRequired={required}
+      // React Aria warns when a group has no accessible name; Radix never
+      // required one. Callers should pass `aria-label(ledby)`; fall back to a
+      // generic name so existing call sites stay silent.
+      aria-label={props['aria-labelledby'] ? undefined : 'Radio group'}
+      // Hero adds `mt-4` to each radio of a vertical group; shadcn spaces them
+      // with the grid `gap`.
+      className={cn('grid gap-3 [&_[data-slot=radio]]:mt-0', className)}
       {...props}
     />
   )
 }
 
+type RadioGroupItemProps = Omit<
+  React.ComponentProps<typeof HeroRadio>,
+  'children' | 'className' | 'isDisabled' | 'value'
+> & {
+  className?: string
+  value: string
+  disabled?: boolean
+}
+
 function RadioGroupItem({
   className,
+  disabled,
+  value,
   ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+}: RadioGroupItemProps) {
   return (
-    <RadioGroupPrimitive.Item
+    <HeroRadio
       data-slot='radio-group-item'
-      className={cn(
-        'aspect-square size-4 shrink-0 rounded-full border border-input text-primary shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40',
-        className
-      )}
+      value={value}
+      isDisabled={disabled}
+      className={cn('inline-flex w-fit shrink-0 outline-none', className)}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator
-        data-slot='radio-group-indicator'
-        className='relative flex items-center justify-center'
-      >
-        <CircleIcon className='absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 fill-primary' />
-      </RadioGroupPrimitive.Indicator>
-    </RadioGroupPrimitive.Item>
+      <HeroRadio.Content className='group/radio gap-0'>
+        <HeroRadio.Control
+          className={cn(
+            // `data-[selected]` fills are Hero defaults (brand `--accent`);
+            // pin the shadcn outline look in every state.
+            'aspect-square size-4 shrink-0 rounded-full border border-input bg-transparent text-primary shadow-xs transition-[color,box-shadow] outline-none dark:bg-input/30',
+            'group-has-[input:focus-visible]/radio:border-ring group-has-[input:focus-visible]/radio:ring-[3px] group-has-[input:focus-visible]/radio:ring-ring/50',
+            'group-data-[invalid=true]/radio:border-destructive group-data-[invalid=true]/radio:ring-destructive/20 dark:group-data-[invalid=true]/radio:ring-destructive/40',
+            'group-data-[selected=true]/radio:border-input group-data-[selected=true]/radio:bg-transparent dark:group-data-[selected=true]/radio:bg-input/30'
+          )}
+        >
+          <HeroRadio.Indicator>
+            {({ isSelected }) =>
+              isSelected ? <CircleIcon className='size-2 fill-primary' /> : null
+            }
+          </HeroRadio.Indicator>
+        </HeroRadio.Control>
+      </HeroRadio.Content>
+    </HeroRadio>
   )
 }
 

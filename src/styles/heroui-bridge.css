@@ -42,3 +42,14 @@
   --separator: var(--border);
   --focus: var(--ring);
 }
+
+/*
+ * Hero's .button gives icons -mx-0.5 my-0.5 (and a size). shadcn icons carry
+ * no margin and callers add their own (ms-2, ...). Reset it in the same layer
+ * (later in source order) so call-site margin utilities still win.
+ */
+@layer components {
+  .button svg:not([data-slot='spinner'] svg, [data-slot='link-icon'] svg) {
+    margin: 0;
+  }
+}

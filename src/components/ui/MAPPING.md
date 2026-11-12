@@ -13,32 +13,38 @@ Targets: **Hero** = `@heroui/react`; **local** = project-owned wrapper; **lib** 
 |---|---|---|
 | `alert-dialog.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `alert.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `avatar.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `badge.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `button.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `avatar.tsx` | Hero `Avatar` (Root/Image/Fallback) | done |
+| `badge.tsx` | Hero `Chip` (shadcn classes pin metrics; no `asChild`) | done |
+| `button.tsx` | Hero `Button` (`buttonVariants` kept as class source; no `asChild`; native `type=submit` default kept) | done |
 | `calendar.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `card.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `checkbox.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `card.tsx` | Hero `Card` (Title/Description rendered as `div`; `CardAction` local) | done |
+| `checkbox.tsx` | Hero `Checkbox` (Radix-style `checked`/`onCheckedChange`) | done |
 | `collapsible.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `command.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `dialog.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `dropdown-menu.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `form.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `input-otp.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `input.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `label.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `input.tsx` | Hero `Input` (RAC input) | done |
+| `label.tsx` | Hero `Label` (`slot={null}` opts out of RAC label context) | done |
 | `popover.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `radio-group.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `radio-group.tsx` | Hero `RadioGroup` + `Radio` (`onValueChange`/`disabled` kept) | done |
 | `scroll-area.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `select.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `separator.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `separator.tsx` | Hero `Separator` (`decorative` -> `isDecorative`) | done |
 | `sheet.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `sidebar.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `skeleton.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `skeleton.tsx` | Hero `Skeleton` (pulse) | done |
 | `sonner.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `switch.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `switch.tsx` | Hero `Switch` (Radix-style `checked`/`onCheckedChange`) | done |
 | `table.tsx` | TBD (Hero / local / standalone lib) | pending |
 | `tabs.tsx` | TBD (Hero / local / standalone lib) | pending |
-| `textarea.tsx` | TBD (Hero / local / standalone lib) | pending |
+| `textarea.tsx` | Hero `TextArea` (RAC textarea) | done |
 | `tooltip.tsx` | TBD (Hero / local / standalone lib) | pending |
 
+## Task 4 notes (A-class adapters)
+
+- Hero's --accent/--muted collision is resolved per component with explicit shadcn utility classes (utilities layer beats Hero's components layer); the global tokens are untouched.
+- Hero resets that leak into shadcn metrics are neutralised in the wrapper classes: `.button` svg margins (`heroui-bridge.css`, same layer so call-site `ms-*` wins), `.button` `transform-gpu`/pressed scale, `.chip`/`.card__*` `--tw-leading` (`[--tw-leading:initial]`), Chip.Label padding (children wrapped in a fragment), Card `p-4`/Content flex.
+- Radix `<XTrigger asChild><Button/></XTrigger>` still works with the Hero button (menus/popovers/tooltips open); those call sites go away with the overlay tasks.
+- React Aria radio/checkbox/switch keep a visually hidden native input: tests should click the label text, not `getByRole('radio')`.

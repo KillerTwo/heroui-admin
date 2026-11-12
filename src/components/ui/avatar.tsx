@@ -1,16 +1,17 @@
 import * as React from 'react'
-import * as AvatarPrimitive from '@radix-ui/react-avatar'
+import { Avatar as HeroAvatar } from '@heroui/react'
 import { cn } from '@/lib/utils'
 
 function Avatar({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+}: React.ComponentProps<typeof HeroAvatar>) {
   return (
-    <AvatarPrimitive.Root
+    <HeroAvatar
       data-slot='avatar'
       className={cn(
-        'relative flex size-8 shrink-0 overflow-hidden rounded-full',
+        // Hero root: size-10, bg-default; shadcn: size-8, transparent.
+        'relative flex size-8 shrink-0 overflow-hidden rounded-full bg-transparent',
         className
       )}
       {...props}
@@ -21,9 +22,9 @@ function Avatar({
 function AvatarImage({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+}: React.ComponentProps<typeof HeroAvatar.Image>) {
   return (
-    <AvatarPrimitive.Image
+    <HeroAvatar.Image
       data-slot='avatar-image'
       className={cn('aspect-square size-full', className)}
       {...props}
@@ -34,12 +35,14 @@ function AvatarImage({
 function AvatarFallback({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+}: React.ComponentProps<typeof HeroAvatar.Fallback>) {
   return (
-    <AvatarPrimitive.Fallback
+    <HeroAvatar.Fallback
       data-slot='avatar-fallback'
       className={cn(
-        'flex size-full items-center justify-center rounded-full bg-muted',
+        // Hero fallback adds text-sm/font-medium and a coloured text; shadcn
+        // inherits both from the surrounding text.
+        'flex size-full items-center justify-center rounded-full bg-muted font-[inherit] text-[length:inherit] text-inherit',
         className
       )}
       {...props}
